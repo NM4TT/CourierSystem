@@ -61,7 +61,31 @@ public class User extends Person{
         this.celphone = celphone;
     }
     
+    @Override
+    public void addToDatabase(){
+        
+    }
     
+    @Override
+    public void update(Person newUser){
+        
+    }
+    
+    @Override
+    public void deleteFromDatabase(){
+        
+    }
+    
+    /**
+     * Method to search an user in database.
+     * @param username
+     * @return User
+     */
+    public static User searchOnDatabase(String username){
+        User user = new User();
+        
+        return user;
+    }    
     
     
     

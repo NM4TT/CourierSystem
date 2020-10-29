@@ -16,27 +16,27 @@
 package core.logic;
 
 /**
- * Client template.
+ * Customer template.
  * @author NM4TT - https://github.com/NM4TT
  */
-public class Client extends Person{
+public class Customer extends Person{
   
     /**
-     * ID refers to the specific code given to a client for recognizing his/her orders.
+     * ID refers to the specific code given to a customer for recognizing his/her orders.
      */
     private String ID;
     
     /**
      * Default constructor that sets all attributes to null.
      */
-    public Client(){
+    public Customer(){
         this.ID = null;
         this.name = null;
         this.lastname = null;
         this.email =  null;
         this.celphone = null;
     }
-    
+      
     /**
      * Constructor with all the class attributes.
      * @param id
@@ -45,7 +45,7 @@ public class Client extends Person{
      * @param email
      * @param celphone 
      */
-    public Client(String id, String name, String lastname, String email, String celphone){
+    public Customer(String id, String name, String lastname, String email, String celphone){
        this.ID = id;
        this.name = name;
        this.lastname = lastname;
@@ -53,9 +53,31 @@ public class Client extends Person{
        this.celphone = celphone;
     }
     
+    @Override
+    public void addToDatabase(){
+        
+    }
     
+    @Override
+    public void update(Person newClient){
+        
+    }
     
+    @Override
+    public void deleteFromDatabase(){
+        
+    }
     
+    /**
+     * Method to search a customer in database.
+     * @param customerID
+     * @return Customer
+     */
+    public static Customer searchOnDatabase(String customerID){
+        Customer customer = new Customer();
+        
+        return customer;
+    }
     
     
     

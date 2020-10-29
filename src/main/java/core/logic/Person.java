@@ -40,4 +40,21 @@ public abstract class Person {
      */
     public abstract void sendEmail(Person entity, String message);
      
+    /**
+     * Method to add a person to database.
+     */
+    public abstract void addToDatabase();
+    
+    /**
+     * Method to update a person in database.
+     * @param newPerson
+     */
+    public abstract void update(Person newPerson);
+
+    /**
+     * Method to delete a person from database.
+     */
+    public abstract void deleteFromDatabase();    
+    
+    
 }
