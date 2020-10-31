@@ -35,26 +35,29 @@ public abstract class Person {
     
     /**
      * This method sends an email to a person.
-     * @param entity
      * @param message 
+     * @return taskDone true or false.
      */
-    public abstract void sendEmail(Person entity, String message);
+    public abstract boolean sendEmail(String message);
      
     /**
      * Method to add a person to database.
+     * @return taskDone true or false.
      */
-    public abstract void addToDatabase();
+    public abstract boolean addToDatabase();
     
     /**
      * Method to update a person in database.
      * @param newPerson
+     * @return taskDone true or false.
      */
-    public abstract void update(Person newPerson);
+    public abstract boolean update(Person newPerson);
 
     /**
      * Method to delete a person from database.
+     * @return taskDone true or false.
      */
-    public abstract void deleteFromDatabase();    
+    public abstract boolean deleteFromDatabase();    
     
     
 }

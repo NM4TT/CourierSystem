@@ -10,7 +10,7 @@ import java.sql.Statement;
  * Database class with some useful methods to manage a database.
  * @author NM4TT - https://github.com/NM4TT
  */
-final class DataBase {
+public final class DataBase {
     
     /**
      * Server url where the database is.
