@@ -28,17 +28,17 @@ public abstract class Person {
     
     
     /**
-     * This method clears data stored in a Person instance.
-     * @param entity 
+     * This method clears data stored in a Person instance. 
      */
-    public abstract void clean_Stored_Data(Person entity);
+    public abstract void clean_Stored_Data();
     
     /**
      * This method sends an email to a person.
+     * @param title
      * @param message 
      * @return taskDone true or false.
      */
-    public abstract boolean sendEmail(String message);
+    public abstract boolean sendEmail(String title, String message);
      
     /**
      * Method to add a person to database.
@@ -46,13 +46,6 @@ public abstract class Person {
      */
     public abstract boolean addToDatabase();
     
-    /**
-     * Method to update a person in database.
-     * @param newPerson
-     * @return taskDone true or false.
-     */
-    public abstract boolean update(Person newPerson);
-
     /**
      * Method to delete a person from database.
      * @return taskDone true or false.
