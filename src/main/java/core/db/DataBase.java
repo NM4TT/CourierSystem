@@ -42,7 +42,7 @@ final class DataBase {
      * @return Connection object.
      * @throws SQLException 
      */
-    static Connection connect(){
+    public static Connection connect(){
         Connection cn = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -62,7 +62,7 @@ final class DataBase {
      * @param cn the connection obj.
      * @throws SQLException 
      */    
-    static void close(Statement st, Connection cn) throws SQLException, NullPointerException{
+    public static void close(Statement st, Connection cn) throws SQLException, NullPointerException{
         st.close();
         cn.close();        
     }
@@ -74,7 +74,7 @@ final class DataBase {
      * @param rs the resultset obj.
      * @throws SQLException
      */    
-    static void close(ResultSet rs, Statement st, Connection cn) throws SQLException, NullPointerException{
+    public static void close(ResultSet rs, Statement st, Connection cn) throws SQLException, NullPointerException{
         rs.close();
         st.close();
         cn.close();        
@@ -85,13 +85,12 @@ final class DataBase {
      * This method is used to clean the database.
      * @param table, this is the table you want to truncate.
      */    
-    static void truncate(String table){
-        Connection con;
-        Statement sta;
+    public static void truncate(String table){
+   
         try{ 
-            con = connect();
-            sta = con.createStatement();
-            sta.executeUpdate("DELETE FROM " + table);
+            Connection con = connect();
+            Statement sta = con.createStatement();
+            sta.executeUpdate("TRUNCATE TABLE " + table);
             
             close(sta, con);
             
