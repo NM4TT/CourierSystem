@@ -2,9 +2,11 @@ package core.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.swing.JOptionPane;
 
 /**
  * Database class with some useful methods to manage a database.
@@ -39,10 +41,10 @@ public final class DataBase {
     
     /**
      * This method is used to create the main connection to the remote database.
-     * @return Connection object.
-     * @throws SQLException 
+     * @return the main connection of the <b>database</b>
+     * @throws NullPointerException if connection not established.
      */
-    public static Connection connect(){
+    public static Connection connect() throws NullPointerException{
         Connection cn = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -50,53 +52,70 @@ public final class DataBase {
             cn = DriverManager.getConnection(HOST,USER,PASSWORD);
             
         } catch (ClassNotFoundException | SQLException e) {
-            System.err.println("Error in DB class: " + e.getMessage());
+            JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CREATING CONNECTION TO DATABASE", JOptionPane.ERROR_MESSAGE);            
         }
         
-        return cn;        
+        return cn;  
+    }
+    
+    /**
+     * This method shall only be used for static SQL operations.
+     * <p> It can only be used by a programmer and its use is going to be
+     * locked with admin password.</p>
+     * @param operation sql operation to be executed.
+     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
+     */
+    public static boolean customOperation(String operation){
+        boolean taskDone = false;
+        
+        try {
+            Connection cn = DataBase.connect();
+            Statement st = cn.createStatement();
+            st.executeUpdate(operation);
+            
+            DataBase.close(st, cn);
+            
+            taskDone = true;
+        } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR EXECUTING CUSTOM OPERATION", JOptionPane.ERROR_MESSAGE);            
+        }
+        
+        return taskDone;
     }
     
     /**
      * This method is used to close the statement and connection objects.
-     * @param st the statement obj.
-     * @param cn the connection obj.
+     * @param cn the <tt>connection</tt> object
+     * @param st the <tt>statement</tt> object
      * @throws SQLException 
      */    
-    public static void close(Statement st, Connection cn) throws SQLException, NullPointerException{
+    public static void close(Statement st, Connection cn) throws SQLException{
         st.close();
         cn.close();        
     }
     
     /**
-     * This method is used to close the resultset, statement and the connection objects.
-     * @param cn the connection obj.
-     * @param st the statement obj.
-     * @param rs the resultset obj.
+     * This method is used to close the statement and connection objects.
+     * @param cn the <tt>connection</tt> object
+     * @param pst the <tt>statement</tt> object
+     * @throws SQLException 
+     */    
+    public static void close(PreparedStatement pst, Connection cn) throws SQLException{
+        pst.close();
+        cn.close();        
+    }    
+
+    /**
+     * This method is used to close the resultset, statement and the connection objects currently in use.
+     * @param cn the <tt>connection</tt> object
+     * @param pst the <tt>prepared statement</tt> object
+     * @param rs the <tt>resultset</tt> object
      * @throws SQLException
      */    
-    public static void close(ResultSet rs, Statement st, Connection cn) throws SQLException, NullPointerException{
+    public static void close(ResultSet rs, PreparedStatement pst, Connection cn) throws SQLException{
         rs.close();
-        st.close();
+        pst.close();
         cn.close();        
-    }
-    
-    
-    /**
-     * This method is used to clean the database.
-     * @param table, this is the table you want to truncate.
-     */    
-    public static void truncate(String table){
-   
-        try{ 
-            Connection con = connect();
-            Statement sta = con.createStatement();
-            sta.executeUpdate("TRUNCATE TABLE " + table);
-            
-            close(sta, con);
-            
-        } catch (SQLException e){
-            System.err.println("Error in truncate: " + e.getMessage());
-        }        
     }
        
 }
