@@ -36,19 +36,19 @@ public abstract class Person {
      * This method sends an email to a person.
      * @param title
      * @param message 
-     * @return taskDone true or false.
+     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
     public abstract boolean sendEmail(String title, String message);
      
     /**
      * Method to add a person to database.
-     * @return taskDone true or false.
+     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
     public abstract boolean addToDatabase();
     
     /**
      * Method to delete a person from database.
-     * @return taskDone true or false.
+     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
     public abstract boolean deleteFromDatabase();    
     
