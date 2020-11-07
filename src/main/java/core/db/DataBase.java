@@ -17,7 +17,7 @@ public final class DataBase {
     /**
      * Server url where the database is.
      */
-    static final String SERVER_URL = "localhost:3360";
+    static final String SERVER_URL = "localhost:3306";
     
     /**
      * Database name.
@@ -25,9 +25,14 @@ public final class DataBase {
     static final String DB_NAME = "datasystem";         
     
     /**
+     * SSL boolean for host. Does it include SSL certificate?
+     */
+    static final boolean INCLUDE_SSL = false;
+    
+    /**
      * This constant contains the remote database host.
      */
-    static final String HOST = "jdbc:mysql://" + SERVER_URL + "/" + DB_NAME;
+    static final String HOST = "jdbc:mysql://" + SERVER_URL + "/" + DB_NAME + "?useSSL="+ INCLUDE_SSL;
     
     /**
      * Admin username of database.
@@ -40,22 +45,21 @@ public final class DataBase {
     static final String PASSWORD = "28032001";
     
     /**
-     * This method is used to create the main connection to the remote database.
-     * @return the main connection of the <b>database</b>
-     * @throws NullPointerException if connection not established.
+     * This method is used to create a connection of the remote database.
+     * @return the <tt>connection</tt> to the database.
      */
-    public static Connection connect() throws NullPointerException{
-        Connection cn = null;
+    public static Connection connect(){
+        
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             
-            cn = DriverManager.getConnection(HOST,USER,PASSWORD);
+            return DriverManager.getConnection(HOST,USER,PASSWORD);
             
         } catch (ClassNotFoundException | SQLException e) {
-            JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CREATING CONNECTION TO DATABASE", JOptionPane.ERROR_MESSAGE);            
+            JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CREATING CONNECTION TO DATABASE", JOptionPane.ERROR_MESSAGE);                        
+            return null;
         }
-        
-        return cn;  
+      
     }
     
     /**
@@ -67,17 +71,22 @@ public final class DataBase {
      */
     public static boolean customOperation(String operation){
         boolean taskDone = false;
+        Connection cn = DataBase.connect(); 
+        Statement st = null;
         
         try {
-            Connection cn = DataBase.connect();
-            Statement st = cn.createStatement();
-            st.executeUpdate(operation);
             
-            DataBase.close(st, cn);
-            
-            taskDone = true;
+            if (cn != null) {
+                st = cn.createStatement();
+                st.executeUpdate(operation);
+                taskDone = true;
+            }       
         } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR EXECUTING CUSTOM OPERATION", JOptionPane.ERROR_MESSAGE);            
+            JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR EXECUTING CUSTOM OPERATION", JOptionPane.ERROR_MESSAGE);            
+        } catch (NullPointerException e) {
+            
+        } finally {
+          DataBase.close(st, cn);
         }
         
         return taskDone;
@@ -87,22 +96,44 @@ public final class DataBase {
      * This method is used to close the statement and connection objects.
      * @param cn the <tt>connection</tt> object
      * @param st the <tt>statement</tt> object
-     * @throws SQLException 
      */    
-    public static void close(Statement st, Connection cn) throws SQLException{
-        st.close();
-        cn.close();        
+    public static void close(Statement st, Connection cn){
+        if (st != null) {
+            try {
+                st.close();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CLOSING STATEMENT", JOptionPane.ERROR_MESSAGE);                
+            }
+        }
+        if (cn != null) {
+            try {
+                cn.close();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CLOSING CONNECTION", JOptionPane.ERROR_MESSAGE);                
+            }
+        }      
     }
     
     /**
      * This method is used to close the statement and connection objects.
      * @param cn the <tt>connection</tt> object
      * @param pst the <tt>statement</tt> object
-     * @throws SQLException 
      */    
-    public static void close(PreparedStatement pst, Connection cn) throws SQLException{
-        pst.close();
-        cn.close();        
+    public static void close(PreparedStatement pst, Connection cn){
+        if (pst != null) {
+            try {
+                pst.close();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CLOSING PREPARED STATEMENT", JOptionPane.ERROR_MESSAGE);                
+            }
+        }
+        if (cn != null) {
+            try {
+                cn.close();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CLOSING CONNECTION", JOptionPane.ERROR_MESSAGE);                
+            }
+        }       
     }    
 
     /**
@@ -110,12 +141,29 @@ public final class DataBase {
      * @param cn the <tt>connection</tt> object
      * @param pst the <tt>prepared statement</tt> object
      * @param rs the <tt>resultset</tt> object
-     * @throws SQLException
      */    
-    public static void close(ResultSet rs, PreparedStatement pst, Connection cn) throws SQLException{
-        rs.close();
-        pst.close();
-        cn.close();        
+    public static void close(ResultSet rs, PreparedStatement pst, Connection cn){
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CLOSING RESULTSET", JOptionPane.ERROR_MESSAGE);                
+            }
+        }
+        if (pst != null) {
+            try {
+                pst.close();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CLOSING PREPARED STATEMENT", JOptionPane.ERROR_MESSAGE);                
+            }
+        }
+        if (cn != null) {
+            try {
+                cn.close();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR CLOSING CONNECTION", JOptionPane.ERROR_MESSAGE);                
+            }
+        }        
     }
        
 }
