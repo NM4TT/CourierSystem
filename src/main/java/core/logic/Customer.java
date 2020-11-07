@@ -69,7 +69,7 @@ public class Customer extends Person{
         boolean taskDone = false;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
-        DataBase.connect();        
+            
             try {
 
 
