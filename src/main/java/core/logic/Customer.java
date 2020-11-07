@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 package core.logic;
+import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.SQLException;
+import core.db.*;
+import java.sql.PreparedStatement;
+import javax.swing.JOptionPane;
 
 /**
  * Customer template.
  * @author NM4TT - https://github.com/NM4TT
  */
 public class Customer extends Person{
+    
+    /**
+     * Database table name of customers.
+     */
+    static final String TABLE = "customers";
   
     /**
      * ID refers to the specific code given to a customer for recognizing his/her orders.
@@ -54,41 +65,141 @@ public class Customer extends Person{
     }
     
     @Override
-    public void addToDatabase(){
-        
+    public boolean addToDatabase(){
+        boolean taskDone = false;
+        Connection cn = DataBase.connect(); 
+        PreparedStatement pst = null;
+        DataBase.connect();        
+            try {
+
+
+                if (cn != null) {
+                    pst = cn.prepareStatement("INSERT INTO " + TABLE + " VALUES (?,?,?,?,?)");
+
+                    pst.setString(1, this.getID());
+                    pst.setString(2, this.getName());
+                    pst.setString(3, this.getLastname());
+                    pst.setString(4, this.getEmail());
+                    pst.setString(5, this.getCelphone());
+
+                    pst.executeUpdate();
+                    taskDone = true;
+                }
+                
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR ADDING CUSTOMER", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                DataBase.close(pst, cn);
+            }
+        return taskDone;    
+    }
+    
+    /**
+     * Method to update a person in database.
+     * @param newClient
+     * @return taskDone true or false.
+     */
+    public boolean update(Customer newClient){
+        boolean taskDone = false;
+        Connection cn = DataBase.connect(); 
+        PreparedStatement pst = null;      
+               
+            try {
+                    if (cn != null) {
+                        pst = cn.prepareStatement("UPDATE " + TABLE + " SET Client_ID = ?, Client_Name = ?, Client_LastName = ?, Client_Email = ?, Client_Celphone = ? WHERE Client_ID = ?");             
+                        pst.setString(1, newClient.getID());
+                        pst.setString(2, newClient.getName());
+                        pst.setString(3, newClient.getLastname());
+                        pst.setString(4, newClient.getEmail());
+                        pst.setString(5, newClient.getCelphone());
+                        pst.setString(6, this.getID());
+
+                        pst.executeUpdate();
+
+                        taskDone = true;
+                    }
+                    
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR UPDATING CUSTOMER", JOptionPane.ERROR_MESSAGE);
+            } finally {
+               DataBase.close(pst, cn); 
+            }
+        return taskDone;           
     }
     
     @Override
-    public void update(Person newClient){
+    public boolean deleteFromDatabase(){
+        boolean taskDone = false;
+        Connection cn = DataBase.connect(); 
+        PreparedStatement pst = null;
         
-    }
-    
-    @Override
-    public void deleteFromDatabase(){
-        
+            try {
+                if (cn != null) {
+                    pst = cn.prepareStatement("DELETE FROM " + TABLE + " WHERE Client_ID = ?");
+                
+                    pst.setString(1, this.getID());
+
+                    pst.executeUpdate();
+                    taskDone = true;
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR DELETING CUSTOMER", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                DataBase.close(pst, cn);
+            }
+        return taskDone;           
     }
     
     /**
      * Method to search a customer in database.
      * @param customerID
      * @return Customer
+     * @throws NullPointerException
      */
-    public static Customer searchOnDatabase(String customerID){
+    public static Customer searchOnDatabase(String customerID) throws NullPointerException{
         Customer customer = new Customer();
+        Connection cn = DataBase.connect(); 
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         
-        return customer;
+        try {
+             if (cn != null) {
+                pst = cn.prepareStatement("SELECT * FROM " + TABLE + " WHERE Client_ID = ?");
+                pst.setString(1, customerID);
+                rs = pst.executeQuery();
+
+                while (rs.next()) {                
+                    customer.setID(customerID);
+                    customer.setName(rs.getString("Client_Name"));
+                    customer.setLastname(rs.getString("Client_LastName"));
+                    customer.setEmail(rs.getString("Client_Email"));
+                    customer.setCelphone(rs.getString("Client_Celphone"));
+                }                
+            }
+ 
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR SEARCHING CUSTOMER", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            DataBase.close(rs, pst, cn);
+        }
+        
+        if (customer.getID() != null) {
+            return customer;
+        } else {
+            return null;
+        }
     }
     
     
     
     
     @Override
-    public void sendEmail(Person entity, String message) {
-        
+    public boolean sendEmail(String title, String message) {
+        return false;
     }    
     
     @Override
-    public void clean_Stored_Data(Person entity) {
+    public void clean_Stored_Data() {
         this.setCelphone(null);
         this.setEmail(null);
         this.setLastname(null);
