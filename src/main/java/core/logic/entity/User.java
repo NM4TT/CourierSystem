@@ -177,8 +177,9 @@ public class User extends Person{
      * Method to search an user in database.
      * @param userID
      * @return User
+     * @throws NullPointerException
      */
-    public static User searchOnDatabase(String userID){
+    public static User searchOnDatabase(String userID) throws NullPointerException{
         User user = new User();
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
