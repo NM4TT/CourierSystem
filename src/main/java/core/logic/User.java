@@ -114,7 +114,8 @@ public class User extends Person{
     
     /**
      * Method to update a user in database.
-     * @param newUser
+     * <p>Once the user is updated, the newUser instance is cleaned.
+     * @param newUser is the User instance with new data.
      * @return taskDone true or false.
      */    
     public boolean update(User newUser){
@@ -138,6 +139,7 @@ public class User extends Person{
                         pst.executeUpdate();
 
                         taskDone = true;
+                        newUser.cleanData();
                     }
                     
             } catch (SQLException e) {
@@ -188,7 +190,7 @@ public class User extends Person{
                 pst.setString(1, userID);
                 rs = pst.executeQuery();
 
-                while (rs.next()) {                
+                if(rs.next()) {                
                     user.setID(userID);
                     user.setName(rs.getString("Employee_Name"));
                     user.setLastname(rs.getString("Employee_LastName"));
@@ -216,6 +218,7 @@ public class User extends Person{
     /**
      * This method adds custom rols to the DataBase in order to classify users
      * <p>This method <b>can only be executed once</b> to set the rols.
+     * <p>Once the rols are created, the rols <tt>array</tt> is cleaned.
      * @param rols is the rol list as an array structure.
      * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
@@ -229,16 +232,24 @@ public class User extends Person{
         ListOfRols.add("NONE");
         ListOfRols.addAll(Arrays.asList(rols));
         
+        
         try {
              if (cn != null) {
                 pst = cn.prepareStatement("INSERT INTO positions VALUES(?,?)");
                 
                  for (int i = 0; i < ListOfRols.size(); i++) {
+                     
+                     //Clean the rols array.
+                     if(i < rols.length){
+                         rols[i] = null;
+                     }
+                     
                      pst.setInt(1, i); //from 1 and so on.
                      pst.setString(2, ListOfRols.get(i));
                      pst.execute();
                  }
                 taskDone = true;
+                ListOfRols.clear();
             }
  
         } catch (SQLException e) {
@@ -318,7 +329,7 @@ public class User extends Person{
     }    
     
     @Override
-    public void clean_Stored_Data() {
+    public void cleanData() {
         this.setCelphone(null);
         this.setEmail(null);
         this.setLastname(null);

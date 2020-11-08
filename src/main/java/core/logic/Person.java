@@ -30,7 +30,7 @@ public abstract class Person {
     /**
      * This method clears data stored in a Person instance. 
      */
-    public abstract void clean_Stored_Data();
+    public abstract void cleanData();
     
     /**
      * This method sends an email to a person.

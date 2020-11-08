@@ -96,6 +96,7 @@ public class Customer extends Person{
     
     /**
      * Method to update a person in database.
+     * <p>Once the customer is updated, the newClient instance is cleaned.
      * @param newClient
      * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
@@ -117,6 +118,7 @@ public class Customer extends Person{
                         pst.executeUpdate();
 
                         taskDone = true;
+                        newClient.cleanData();
                     }
                     
             } catch (SQLException e) {
@@ -168,7 +170,7 @@ public class Customer extends Person{
                 pst.setString(1, customerID);
                 rs = pst.executeQuery();
 
-                while (rs.next()) {                
+                if(rs.next()) {                
                     customer.setID(customerID);
                     customer.setName(rs.getString("Client_Name"));
                     customer.setLastname(rs.getString("Client_LastName"));
@@ -199,7 +201,7 @@ public class Customer extends Person{
     }    
     
     @Override
-    public void clean_Stored_Data() {
+    public void cleanData() {
         this.setCelphone(null);
         this.setEmail(null);
         this.setLastname(null);
