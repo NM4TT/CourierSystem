@@ -54,11 +54,6 @@ public class User extends Person{
     }
     
     /**
-     * Database table name of customers.
-     */
-    static final String TABLE = "employees";
-    
-    /**
      * Constructor with all the class attributes.
      * @param id
      * @param name
@@ -89,7 +84,7 @@ public class User extends Person{
             try {
 
                 if (cn != null) {
-                    pst = cn.prepareStatement("INSERT INTO " + TABLE + " VALUES (?,?,?,?,?,?,?,?)");
+                    pst = cn.prepareStatement("INSERT INTO employees VALUES (?,?,?,?,?,?,?,?)");
 
                     pst.setString(1, this.getID());
                     pst.setString(2, this.getName());
@@ -125,7 +120,7 @@ public class User extends Person{
                
             try {
                     if (cn != null) {
-                        pst = cn.prepareStatement("UPDATE " + TABLE + " SET Employee_ID = ?, Employee_Name = ?, Employee_LastName = ?, Employee_Email = ?, Employee_Celphone = ?, Employee_User = ?, Employee_Password = ?, Employee_Position = ? WHERE Employee_ID = ?");             
+                        pst = cn.prepareStatement("UPDATE employees SET Employee_ID = ?, Employee_Name = ?, Employee_LastName = ?, Employee_Email = ?, Employee_Celphone = ?, Employee_User = ?, Employee_Password = ?, Employee_Position = ? WHERE Employee_ID = ?");             
                         pst.setString(1, newUser.getID());
                         pst.setString(2, newUser.getName());
                         pst.setString(3, newUser.getLastname());
@@ -158,7 +153,7 @@ public class User extends Person{
         
             try {
                 if (cn != null) {
-                    pst = cn.prepareStatement("DELETE FROM " + TABLE + " WHERE Employee_ID = ?");
+                    pst = cn.prepareStatement("DELETE FROM employees WHERE Employee_ID = ?");
                 
                     pst.setString(1, this.getID());
 
@@ -187,7 +182,7 @@ public class User extends Person{
         
         try {
              if (cn != null) {
-                pst = cn.prepareStatement("SELECT * FROM " + TABLE + " WHERE Employee_ID = ?");
+                pst = cn.prepareStatement("SELECT * FROM employees WHERE Employee_ID = ?");
                 pst.setString(1, userID);
                 rs = pst.executeQuery();
 

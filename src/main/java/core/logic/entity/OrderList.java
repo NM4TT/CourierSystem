@@ -29,11 +29,6 @@ import javax.swing.JOptionPane;
 public class OrderList {
     
     /**
-     * This String refers to the table name in the database for these instances.
-     */
-    static final String TABLE = "orders";
-    
-    /**
      * Order ID.
      */
     private String ID;
@@ -143,7 +138,7 @@ public class OrderList {
         
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("INSERT INTO " + TABLE + " VALUES (?,?,?,?)");
+                    pst = cn.prepareStatement("INSERT INTO orders VALUES (?,?,?,?)");
                     pst.setString(1, this.getID());
                     pst.setString(2, this.getDate());
                     pst.setInt(3, this.getStatus());
@@ -176,7 +171,7 @@ public class OrderList {
         
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("UPDATE " + Packet.TABLE + " SET Order_ID = ? WHERE Packet_ID = ?");
+                    pst = cn.prepareStatement("UPDATE packets SET Order_ID = ? WHERE Packet_ID = ?");
                     pst.setString(1,this.getID());
                     pst.setString(2,packet.getID());
                     
@@ -207,7 +202,7 @@ public class OrderList {
         
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("UPDATE " + TABLE + " SET Order_ID = ?, Order_Date = ?, Order_Status = ?, Client_ID = ? WHERE Order_ID = ?");
+                    pst = cn.prepareStatement("UPDATE orders SET Order_ID = ?, Order_Date = ?, Order_Status = ?, Client_ID = ? WHERE Order_ID = ?");
                     pst.setString(1,newOrder.getID());
                     pst.setString(2,newOrder.getDate());
                     pst.setInt(3,newOrder.getStatus());
@@ -239,7 +234,7 @@ public class OrderList {
         
             try{
                 if (cn != null) {
-                    pst = cn.prepareStatement("UPDATE " + TABLE + " SET Order_Status = ? WHERE Order_ID = ?");
+                    pst = cn.prepareStatement("UPDATE orders SET Order_Status = ? WHERE Order_ID = ?");
                     pst.setInt(1,Status.valueOf(newStatus.toUpperCase()).getValue());
                     pst.setString(2,this.getID());
                     
@@ -267,7 +262,7 @@ public class OrderList {
         
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("DELETE FROM " + TABLE + " WHERE Order_ID = ?");
+                    pst = cn.prepareStatement("DELETE FROM orders WHERE Order_ID = ?");
                     pst.setString(1, this.getID());
                     
                     pst.execute();
@@ -294,7 +289,7 @@ public class OrderList {
         
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("DELETE FROM " + Packet.TABLE + " WHERE Order_ID = ?");
+                    pst = cn.prepareStatement("DELETE FROM packets WHERE Order_ID = ?");
                     pst.setString(1, this.getID());
                     
                     pst.execute();
@@ -323,7 +318,7 @@ public class OrderList {
         
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("SELECT * FROM " + TABLE + " WHERE Order_ID = ?");
+                    pst = cn.prepareStatement("SELECT * FROM orders WHERE Order_ID = ?");
                     pst.setString(1,orderID);
                     rs = pst.executeQuery();
                     
@@ -360,7 +355,7 @@ public class OrderList {
         
             try{
                 if (cn != null) {
-                    pst = cn.prepareStatement("SELECT * FROM " + Packet.TABLE + " WHERE Order_ID = ?");
+                    pst = cn.prepareStatement("SELECT * FROM packets WHERE Order_ID = ?");
                     pst.setString(1, this.getID());
                     rs = pst.executeQuery();
                     
@@ -399,10 +394,6 @@ public class OrderList {
      */
     public static class Packet {
         
-        /**
-         * DataBase table of Packets.
-         */
-        static final String TABLE = "packets";
         /**
          * Packet ID code.
          */
@@ -487,7 +478,7 @@ public class OrderList {
             
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("INSERT INTO " + TABLE + " VALUES (?,?,?,?,?,?)");
+                    pst = cn.prepareStatement("INSERT INTO packets VALUES (?,?,?,?,?,?)");
                     pst.setString(1, this.getID());
                     pst.setString(2, null);
                     pst.setString(3, this.getDate());
@@ -521,7 +512,7 @@ public class OrderList {
             
                 try {
                     if(cn != null){
-                        pst = cn.prepareStatement("UPDATE " + TABLE + " SET Packet_ID = ?, Order_ID = ?, Packet_Date = ?, Concept = ?, Weight_Lb = ?, Volumetric_Weight = ? WHERE Packet_ID = ?");
+                        pst = cn.prepareStatement("UPDATE packets SET Packet_ID = ?, Order_ID = ?, Packet_Date = ?, Concept = ?, Weight_Lb = ?, Volumetric_Weight = ? WHERE Packet_ID = ?");
                         pst.setString(1, newPacket.getID());
                         pst.setString(2, newPacket.getOrder_ID());
                         pst.setString(3, newPacket.getDate());
@@ -554,7 +545,7 @@ public class OrderList {
             
                 try {
                     if(cn != null){
-                        pst = cn.prepareStatement("DELETE FROM " + TABLE + " WHERE Packet_ID = ?");
+                        pst = cn.prepareStatement("DELETE FROM packets WHERE Packet_ID = ?");
                         pst.setString(1, this.getID());
 
                         pst.execute();
@@ -582,7 +573,7 @@ public class OrderList {
             
                 try {
                     if(cn != null){
-                        pst = cn.prepareStatement("SELECT * FROM " + TABLE + " WHERE Packet_ID = ?");
+                        pst = cn.prepareStatement("SELECT * FROM packets WHERE Packet_ID = ?");
                         pst.setString(1,packetID);
                         rs = pst.executeQuery();
                         

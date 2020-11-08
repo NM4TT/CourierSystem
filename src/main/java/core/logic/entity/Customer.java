@@ -28,11 +28,6 @@ import javax.swing.JOptionPane;
 public class Customer extends Person{
     
     /**
-     * Database table name of customers.
-     */
-    static final String TABLE = "customers";
-  
-    /**
      * ID refers to the specific code given to a customer for recognizing his/her orders.
      */
     private String ID;
@@ -74,7 +69,7 @@ public class Customer extends Person{
 
 
                 if (cn != null) {
-                    pst = cn.prepareStatement("INSERT INTO " + TABLE + " VALUES (?,?,?,?,?)");
+                    pst = cn.prepareStatement("INSERT INTO customers VALUES (?,?,?,?,?)");
 
                     pst.setString(1, this.getID());
                     pst.setString(2, this.getName());
@@ -107,7 +102,7 @@ public class Customer extends Person{
                
             try {
                     if (cn != null) {
-                        pst = cn.prepareStatement("UPDATE " + TABLE + " SET Client_ID = ?, Client_Name = ?, Client_LastName = ?, Client_Email = ?, Client_Celphone = ? WHERE Client_ID = ?");             
+                        pst = cn.prepareStatement("UPDATE customers SET Client_ID = ?, Client_Name = ?, Client_LastName = ?, Client_Email = ?, Client_Celphone = ? WHERE Client_ID = ?");             
                         pst.setString(1, newClient.getID());
                         pst.setString(2, newClient.getName());
                         pst.setString(3, newClient.getLastname());
@@ -137,7 +132,7 @@ public class Customer extends Person{
         
             try {
                 if (cn != null) {
-                    pst = cn.prepareStatement("DELETE FROM " + TABLE + " WHERE Client_ID = ?");
+                    pst = cn.prepareStatement("DELETE FROM customers WHERE Client_ID = ?");
                 
                     pst.setString(1, this.getID());
 
@@ -166,7 +161,7 @@ public class Customer extends Person{
         
         try {
              if (cn != null) {
-                pst = cn.prepareStatement("SELECT * FROM " + TABLE + " WHERE Client_ID = ?");
+                pst = cn.prepareStatement("SELECT * FROM customers WHERE Client_ID = ?");
                 pst.setString(1, customerID);
                 rs = pst.executeQuery();
 
