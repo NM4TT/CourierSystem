@@ -97,7 +97,7 @@ public class Customer extends Person{
     /**
      * Method to update a person in database.
      * @param newClient
-     * @return taskDone true or false.
+     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
     public boolean update(Customer newClient){
         boolean taskDone = false;
