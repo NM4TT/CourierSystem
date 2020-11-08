@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package core.logic;
+package core.logic.entity;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.SQLException;
