@@ -19,6 +19,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 import javax.swing.JOptionPane;
 
@@ -39,39 +41,34 @@ public class OrderList {
     private String date;
     
     /**
-     * Enum for order status information.
+     * Enum for order delivery_status information.
      */
-    public static enum Status {
+    public static enum Delivery_Status {
 
         /**
-         * <b>Undefined</b> status.
+         * <b>Undefined</b> delivery_status.
          */
         UNDEFINED(0),
         /**
-         * Order <b>shipped</b> status.
+         * Order <b>shipped</b> delivery_status.
          */
         SHIPPED(1),
         /**
-         * Order <b>in transit</b> status.
+         * Order <b>in transit</b> delivery_status.
          */
         IN_TRANSIT(2),
         /**
-         * Order <b>arrived</b> status.
+         * Order <b>arrived</b> delivery_status.
          */
         ARRIVED(3);
         
-        private int value;
+        private int value;     
         
         /**
-         * This String refers to the table name in the database for order status.
-         */
-        static final String TABLE = "delivery_status";        
-        
-        /**
-         * Constructor for status enum.
+         * Constructor for delivery_status enum.
          * @param value 
          */
-        Status(int value){
+        Delivery_Status(int value){
             this.value = value;
         }
         
@@ -88,15 +85,58 @@ public class OrderList {
          * @return 
          */
         String getValue(int value){
-            return Status.values()[value].toString();
+            return Delivery_Status.values()[value].toString();
         }
-    
     }
     
+    public static enum Payment_Status {
+
+        /**
+         * <b>Not Paid</b> delivery_status.
+         */
+        NOT_PAID(0),
+        /**
+         * <b>Paid</b> delivery_status.
+         */
+        PAID(1);
+        
+        private int value;  
+        
+        /**
+         * Constructor for delivery_status enum.
+         * @param value 
+         */
+        Payment_Status(int value){
+            this.value = value;
+        }
+        
+        /**
+         * This returns the constant value of the enum.
+         * @return value as <tt>int</tt> 
+         */
+        int getValue(){
+            return value;
+        }
+        /**
+         * This returns the constant name as String.
+         * @param value its the constant value as int.
+         * @return 
+         */
+        String getValue(int value){
+            return Payment_Status.values()[value].toString();
+        }
+    
+    }    
+    
     /**
-     * Status of orders. A <tt>zero</tt> value means a <b>UNDEFINED</b> status.
+     * Delivery_Status of orders. A <tt>zero</tt> value means a <b>UNDEFINED</b> delivery_status.
      */
-    private int status;
+    private int delivery_status;
+    
+    /**
+     * Payment_Status of orders. A <tt>zero</tt> value means ORDER NOT PAID.
+     */
+    private int payment_status;
     
     /**
      * Customer object with client information.
@@ -104,12 +144,20 @@ public class OrderList {
     private Customer client;
     
     /**
+     * This constant has the tax % for price calculation.
+     * <p>The actual TAX is panamanian (%7). The product of this tax times the subtotal
+     * will be the <b>TOTAL TO PAY</b>.
+     */
+    public static final double TAX = 1.07;
+    
+    /**
      * Constructor that initializes all attributes to default value.
      */
     public OrderList(){
         this.ID = null;
         this.date = null;
-        this.status = 0;
+        this.delivery_status = 0;
+        this.payment_status = 0;
         this.client = new Customer();
     }
 
@@ -117,13 +165,15 @@ public class OrderList {
      * Constructor to initialize the instance with data except the packetList.
      * @param id
      * @param date
-     * @param status
+     * @param delivery_status
+     * @param payment_status
      * @param client 
      */
-    public OrderList(String id, String date, String status, Customer client ){
+    public OrderList(String id, String date, String delivery_status,String payment_status, Customer client ){
         this.ID = id;
         this.date = date;
-        this.status = Status.valueOf(status.toUpperCase()).getValue();
+        this.delivery_status = Delivery_Status.valueOf(delivery_status.toUpperCase()).getValue();
+        this.payment_status = Payment_Status.valueOf(payment_status.toUpperCase()).getValue();
         this.client = client;
     }    
     
@@ -138,11 +188,12 @@ public class OrderList {
         
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("INSERT INTO orders VALUES (?,?,?,?)");
+                    pst = cn.prepareStatement("INSERT INTO orders VALUES (?,?,?,?,?)");
                     pst.setString(1, this.getID());
                     pst.setString(2, this.getDate());
-                    pst.setInt(3, this.getStatus());
+                    pst.setInt(3, this.getDeliveryStatus());
                     pst.setString(4, this.getClient().getID());
+                    pst.setInt(5,this.getPaymentStatus());
                     
                     pst.execute();
                     taskDone = true;
@@ -158,7 +209,6 @@ public class OrderList {
     
     /**
      * This method is used to assign a packet to this order.
-     * <p>The packet once it's added to the order, its instance is cleaned.
      * @param packet
      * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
@@ -177,7 +227,7 @@ public class OrderList {
                     
                     pst.execute();
                     taskDone = true;
-                    packet.cleanData();
+                    
                 }
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR ADDING PACKET TO ORDER", JOptionPane.ERROR_MESSAGE);
@@ -202,12 +252,13 @@ public class OrderList {
         
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("UPDATE orders SET Order_ID = ?, Order_Date = ?, Order_Status = ?, Client_ID = ? WHERE Order_ID = ?");
+                    pst = cn.prepareStatement("UPDATE orders SET Order_ID = ?, Order_Date = ?, Delivery_Status = ?, Client_ID = ?, Payment_Status = ? WHERE Order_ID = ?");
                     pst.setString(1,newOrder.getID());
                     pst.setString(2,newOrder.getDate());
-                    pst.setInt(3,newOrder.getStatus());
+                    pst.setInt(3,newOrder.getDeliveryStatus());
                     pst.setString(4,newOrder.getClient().getID());
-                    pst.setString(5,this.getID());
+                    pst.setInt(5,newOrder.getPaymentStatus());
+                    pst.setString(6,this.getID());
                     
                     pst.execute();
                     taskDone = true;
@@ -223,19 +274,48 @@ public class OrderList {
     }
     
     /**
-     * This method is used only to update the order status.
-     * @param newStatus status name.
+     * This method is used only to update the order delivery_status.
+     * @param newStatus delivery_status name.
      * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public boolean updateOrderStatus(String newStatus){
+    public boolean updateDeliveryStatus(String newStatus){
         boolean taskDone = false;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
         
             try{
                 if (cn != null) {
-                    pst = cn.prepareStatement("UPDATE orders SET Order_Status = ? WHERE Order_ID = ?");
-                    pst.setInt(1,Status.valueOf(newStatus.toUpperCase()).getValue());
+                    pst = cn.prepareStatement("UPDATE orders SET Delivery_Status = ? WHERE Order_ID = ?");
+                    pst.setInt(1,Delivery_Status.valueOf(newStatus.toUpperCase()).getValue());
+                    pst.setString(2,this.getID());
+                    
+                    pst.execute();
+                    taskDone = true;
+                    
+                }
+            } catch(SQLException e){
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR UPDATING ORDER STATUS", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                DataBase.close(pst, cn);
+            }
+        
+        return taskDone;
+    }
+
+    /**
+     * This method is used only to update the order payment_status.
+     * @param newStatus payment_status name.
+     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
+     */
+    public boolean updatePaymentStatus(String newStatus){
+        boolean taskDone = false;
+        Connection cn = DataBase.connect();
+        PreparedStatement pst = null;
+        
+            try{
+                if (cn != null) {
+                    pst = cn.prepareStatement("UPDATE orders SET Payment_Status = ? WHERE Order_ID = ?");
+                    pst.setInt(1,Payment_Status.valueOf(newStatus.toUpperCase()).getValue());
                     pst.setString(2,this.getID());
                     
                     pst.execute();
@@ -325,8 +405,9 @@ public class OrderList {
                     if(rs.next()){
                         list.setID(orderID);
                         list.setDate(rs.getString("Order_Date"));
-                        list.setStatus(rs.getInt("Order_Status"));
+                        list.setDeliveryStatus(rs.getInt("Delivery_Status"));
                         list.setClient(Customer.searchOnDatabase(rs.getString("Client_ID")));
+                        list.setPaymentStatus(rs.getInt("Payment_Status"));
                     }
                     
                 }
@@ -378,6 +459,99 @@ public class OrderList {
             return null;
         }
     }
+    
+    /**
+     * This method will calculate the cost of an order based on its <b>weight</b>.
+     * <p>The function consults to the database the actual lb_cost stored in the system to calculate.
+     * @return <tt>double</tt> cost.
+     */
+    public double getWeightCost(){
+        double cost = 0.0;
+        double weight = 0.0;
+        Connection cn = DataBase.connect();
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        
+        Stack<Packet> packetStack = this.getPacketStack();
+        
+        while(!packetStack.isEmpty()){
+            
+            weight = packetStack.pop().getWeight();         
+        }
+        
+        try {
+            if(cn != null){
+                pst = cn.prepareStatement("SELECT Info_Data FROM system_information WHERE Info_Name = 'lb_cost' ");
+                rs = pst.executeQuery();
+                
+                if(rs.next()){
+                    cost = (rs.getString("Info_Data") != null) ? rs.getDouble("Info_Data") : 0;
+                }
+                
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR GETTING ORDER COST (Weight)", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            DataBase.close(rs, pst, cn);
+        }
+        
+        //less than 1lb cost as 1lb.
+        if (weight <= 1) {
+            return Math.round(cost * 100.0) / 100.0;
+        } else {
+            return Math.round((cost * weight) * 100.0) / 100.0;
+        }
+    }
+    
+    /**
+     * This method calculates the cost of an order based on its volumetric weight.
+     * <p>It iterates the order packets to get the amount of volumetric weight before calculate.
+     * <p>If packet's volume is less than the volumetric_limit it returns 0.
+     * @return <tt>double</tt> cost
+     */
+    public double getVolumetricCost(){
+        
+        Map<String,String> system_Data = new HashMap<>(2); //This map will save the whole system_information table data.
+        
+        Connection cn = DataBase.connect();
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        double volumetric_limit, volumetric_cost;
+        
+        try {
+            if(cn != null){
+                pst = cn.prepareStatement("SELECT * FROM system_information");
+                rs = pst.executeQuery();
+                
+                while(rs.next()){
+                   system_Data.put(rs.getString("Info_Name"), rs.getString("Info_Data"));
+                }
+                
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR GETTING ORDER COST (Volumetric)", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            DataBase.close(rs, pst, cn);
+        }
+        
+        volumetric_limit = (system_Data.get("volumetric_limit") != null) ? Double.parseDouble(system_Data.get("volumetric_limit")) : 0;
+        volumetric_cost = (system_Data.get("volumetric_cost") != null) ? Double.parseDouble(system_Data.get("volumetric_cost")) : 0;
+        
+        
+        Stack<Packet> packetStack = this.getPacketStack();
+        double total_volume = 0;
+        while (!packetStack.isEmpty()) {            
+            total_volume += packetStack.pop().getVolumetricWeight();
+        }
+        
+        //if limited exceeded return 0.
+        if (total_volume <= volumetric_limit) {
+            return 0.0;
+        } else {
+            double surplus = total_volume - volumetric_limit;
+            return Math.round((surplus * volumetric_cost) * 100.0) / 100.0;
+        }
+    } 
         
     /**
      * This method is used to clean the instance data.
@@ -386,7 +560,7 @@ public class OrderList {
         this.setID(null);
         this.setDate(null);
         this.setClient(null);
-        this.setStatus(0);
+        this.setDeliveryStatus(0);
     }
     
     /**
@@ -602,6 +776,36 @@ public class OrderList {
         }
         
         /**
+         * This method is used to calculate a packet cost based on its <b>weight</b>.
+         * <p>The function consults to the database the actual lb_cost stored in the system.
+         * @return <tt>double</tt> cost
+         */
+        public double getWeightCost(){
+            double cost = 0.0;
+            Connection cn = DataBase.connect();
+            PreparedStatement pst = null;
+            ResultSet rs = null;
+            
+            try {
+                if(cn != null){
+                    pst = cn.prepareStatement("SELECT Info_Data FROM system_information WHERE Info_Name = 'lb_cost' ");
+                    rs = pst.executeQuery();
+
+                    if(rs.next()){
+                        cost = rs.getDouble("Info_Data");
+                    }
+
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR GETTING PACKET COST", JOptionPane.ERROR_MESSAGE);
+            } finally {
+                DataBase.close(rs, pst, cn);
+            }            
+            
+            return cost * this.getWeight();
+        }
+        
+        /**
          * This method clean Packet instances data.
          */
         public void cleanData(){
@@ -728,20 +932,6 @@ public class OrderList {
     }
 
     /**
-     * @return the status
-     */
-    public int getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status the status to set
-     */
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    /**
      * @return the client
      */
     public Customer getClient() {
@@ -753,5 +943,33 @@ public class OrderList {
      */
     public void setClient(Customer client) {
         this.client = client;
+    }
+
+    /**
+     * @return the delivery_status
+     */
+    public int getDeliveryStatus() {
+        return delivery_status;
+    }
+
+    /**
+     * @param delivery_status the delivery_status to set
+     */
+    public void setDeliveryStatus(int delivery_status) {
+        this.delivery_status = delivery_status;
+    }
+
+    /**
+     * @return the payment_status
+     */
+    public int getPaymentStatus() {
+        return payment_status;
+    }
+
+    /**
+     * @param payment_status the payment_status to set
+     */
+    public void setPaymentStatus(int payment_status) {
+        this.payment_status = payment_status;
     }
 }
