@@ -140,7 +140,6 @@ DROP TABLE IF EXISTS `packets`;
 CREATE TABLE `packets` (
   `Packet_ID` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `Order_ID` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Packet_Date` date NOT NULL,
   `Concept` text COLLATE utf8_unicode_ci NOT NULL,
   `Weight_Lb` double NOT NULL,
   `Volumetric_Weight` double NOT NULL,
@@ -239,4 +238,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-15 12:40:15
+-- Dump completed on 2020-12-15 13:16:33

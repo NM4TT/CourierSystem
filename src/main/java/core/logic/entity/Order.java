@@ -28,7 +28,7 @@ import javax.swing.JOptionPane;
  * Class for dealing with client orders.
  * @author NM4TT - https://github.com/NM4TT
  */
-public class OrderList {
+public class Order {
     
     /**
      * Order ID.
@@ -153,7 +153,7 @@ public class OrderList {
     /**
      * Constructor that initializes all attributes to default value.
      */
-    public OrderList(){
+    public Order(){
         this.ID = null;
         this.date = null;
         this.delivery_status = 0;
@@ -169,7 +169,7 @@ public class OrderList {
      * @param payment_status
      * @param client 
      */
-    public OrderList(String id, String date, String delivery_status,String payment_status, Customer client ){
+    public Order(String id, String date, String delivery_status,String payment_status, Customer client ){
         this.ID = id;
         this.date = date;
         this.delivery_status = Delivery_Status.valueOf(delivery_status.toUpperCase()).getValue();
@@ -245,7 +245,7 @@ public class OrderList {
      * @param newOrder is the updated order.
      * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public boolean updateOrder(OrderList newOrder){
+    public boolean updateOrder(Order newOrder){
         boolean taskDone = false;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
@@ -387,11 +387,11 @@ public class OrderList {
     /**
      * This method is used to search an order within the database.
      * @param orderID the ID of the order to search.
-     * @return OrderList
+     * @return Order
      * @throws NullPointerException
      */
-    public static OrderList searchOnDatabase(String orderID) throws NullPointerException{
-        OrderList list = new OrderList();
+    public static Order searchOnDatabase(String orderID) throws NullPointerException{
+        Order list = new Order();
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -442,7 +442,7 @@ public class OrderList {
                     
                     
                     while(rs.next()){
-                        Packet packet = new Packet(rs.getString("Packet_ID"), rs.getString("Order_ID"), rs.getString("Packet_Date"), rs.getString("Concept"), rs.getDouble("Weight_Lb"), rs.getDouble("Volumetric_Weight"));
+                        Packet packet = new Packet(rs.getString("Packet_ID"), rs.getString("Order_ID"), rs.getString("Concept"), rs.getDouble("Weight_Lb"), rs.getDouble("Volumetric_Weight"));
                         stack.add(packet);
                     }
                     
@@ -577,10 +577,6 @@ public class OrderList {
          */
         private String Order_ID;
         /**
-         * Date of ordered. format <tt>YYYY-MM-DD</tt>.
-         */
-        private String date;
-        /**
          * Small summary of packet.
          */
         private String concept;
@@ -599,7 +595,6 @@ public class OrderList {
         public Packet(){
             this.ID = null;
             this.Order_ID = null;
-            this.date = null;
             this.concept = null;
             this.weight = 0.0;
             this.volumetricWeight = 0.0;
@@ -609,15 +604,13 @@ public class OrderList {
          * Constructor with all class attributes.
          * @param ID
          * @param orderID
-         * @param date
          * @param concept
          * @param weight
          * @param volumetricWeight 
          */
-        public Packet(String ID, String orderID, String date, String concept, double weight, double volumetricWeight){
+        public Packet(String ID, String orderID, String concept, double weight, double volumetricWeight){
             this.ID = ID;
             this.Order_ID = orderID;
-            this.date = date;
             this.concept = concept;
             this.weight = weight;
             this.volumetricWeight = volumetricWeight;
@@ -626,14 +619,12 @@ public class OrderList {
         /**
          * Constructor with all class attributes except orderID.
          * @param ID
-         * @param date
          * @param concept
          * @param weight
          * @param volumetricWeight 
          */
-        public Packet(String ID, String date, String concept, double weight, double volumetricWeight){
+        public Packet(String ID, String concept, double weight, double volumetricWeight){
             this.ID = ID;
-            this.date = date;
             this.concept = concept;
             this.weight = weight;
             this.volumetricWeight = volumetricWeight;
@@ -652,13 +643,12 @@ public class OrderList {
             
             try {
                 if(cn != null){
-                    pst = cn.prepareStatement("INSERT INTO packets VALUES (?,?,?,?,?,?)");
+                    pst = cn.prepareStatement("INSERT INTO packets VALUES (?,?,?,?,?)");
                     pst.setString(1, this.getID());
                     pst.setString(2, null);
-                    pst.setString(3, this.getDate());
-                    pst.setString(4, this.getConcept());
-                    pst.setDouble(5, this.getWeight());
-                    pst.setDouble(6,this.getVolumetricWeight());
+                    pst.setString(3, this.getConcept());
+                    pst.setDouble(4, this.getWeight());
+                    pst.setDouble(5,this.getVolumetricWeight());
                     
                     pst.execute();
                     taskDone = true;
@@ -686,14 +676,13 @@ public class OrderList {
             
                 try {
                     if(cn != null){
-                        pst = cn.prepareStatement("UPDATE packets SET Packet_ID = ?, Order_ID = ?, Packet_Date = ?, Concept = ?, Weight_Lb = ?, Volumetric_Weight = ? WHERE Packet_ID = ?");
+                        pst = cn.prepareStatement("UPDATE packets SET Packet_ID = ?, Order_ID = ?, Concept = ?, Weight_Lb = ?, Volumetric_Weight = ? WHERE Packet_ID = ?");
                         pst.setString(1, newPacket.getID());
                         pst.setString(2, newPacket.getOrder_ID());
-                        pst.setString(3, newPacket.getDate());
-                        pst.setString(4, newPacket.getConcept());
-                        pst.setDouble(5, newPacket.getWeight());
-                        pst.setDouble(6,newPacket.getVolumetricWeight());
-                        pst.setString(7, this.getID());
+                        pst.setString(3, newPacket.getConcept());
+                        pst.setDouble(4, newPacket.getWeight());
+                        pst.setDouble(5,newPacket.getVolumetricWeight());
+                        pst.setString(6, this.getID());
 
                         pst.execute();
                         taskDone = true;
@@ -754,7 +743,6 @@ public class OrderList {
                         if(rs.next()){
                             packet.setID(packetID);
                             packet.setOrder_ID(rs.getString("Order_ID"));
-                            packet.setDate(rs.getString("Packet_Date"));
                             packet.setConcept(rs.getString("Concept"));
                             packet.setWeight(rs.getDouble("Weight_Lb"));
                             packet.setVolumetricWeight(rs.getDouble("Volumetric_Weight"));
@@ -811,7 +799,6 @@ public class OrderList {
         public void cleanData(){
             this.setID(null);
             this.setOrder_ID(null);
-            this.setDate(null);
             this.setConcept(null);
             this.setWeight(0.0);
             this.setVolumetricWeight(0.0);
@@ -843,20 +830,6 @@ public class OrderList {
          */
         public void setOrder_ID(String Order_ID) {
             this.Order_ID = Order_ID;
-        }
-
-        /**
-         * @return the date
-         */
-        public String getDate() {
-            return date;
-        }
-
-        /**
-         * @param date the date to set
-         */
-        public void setDate(String date) {
-            this.date = date;
         }
 
         /**
