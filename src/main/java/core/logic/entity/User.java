@@ -44,11 +44,7 @@ public class User extends Person{
      */
     public User(){
         this.ID = null;
-        this.name = null;
-        this.lastname = null;
         this.username = null;
-        this.email = null;
-        this.celphone = null;
         this.password = null;
         this.rol = 0; //Zero is a none rol status.
     }
@@ -56,23 +52,15 @@ public class User extends Person{
     /**
      * Constructor with all the class attributes.
      * @param id
-     * @param name
-     * @param lastname
-     * @param email
-     * @param celphone
      * @param username
      * @param password
      * @param rol
      */
-    public User(String id, String name, String lastname, String email, String celphone, String username, String password, int rol){
+    public User(String id, String username, String password, int rol){
         this.ID = id;
-        this.name = name;
-        this.lastname = lastname;
         this.username = username;
         this.password = password;
         this.rol = rol;
-        this.email = email;
-        this.celphone = celphone;
     }
     
     @Override
@@ -120,7 +108,7 @@ public class User extends Person{
                
             try {
                     if (cn != null) {
-                        pst = cn.prepareStatement("UPDATE employees SET Employee_ID = ?, Employee_Name = ?, Employee_LastName = ?, Employee_Email = ?, Employee_Celphone = ?, Employee_User = ?, Employee_Password = ?, Employee_Position = ? WHERE Employee_ID = ?");             
+                        pst = cn.prepareStatement("UPDATE employees SET Employee_ID = ?, Employee_Name = ?, Employee_LastName = ?, Employee_Email = ?, Employee_Celphone = ?, Employee_Username = ?, Employee_Password = ?, Employee_Position = ? WHERE Employee_ID = ?");             
                         pst.setString(1, newUser.getID());
                         pst.setString(2, newUser.getName());
                         pst.setString(3, newUser.getLastname());
@@ -192,7 +180,7 @@ public class User extends Person{
                     user.setLastname(rs.getString("Employee_LastName"));
                     user.setEmail(rs.getString("Employee_Email"));
                     user.setCelphone(rs.getString("Employee_Celphone"));
-                    user.setUsername(rs.getString("Employee_User"));
+                    user.setUsername(rs.getString("Employee_Username"));
                     user.setPassword(rs.getString("Employee_Password"));
                     user.setRol(rs.getInt("Employee_Position"));
                 }                
@@ -317,11 +305,6 @@ public class User extends Person{
             DataBase.close(rs,pst,cn);
         }        
         return rol;
-    }
-    
-    @Override
-    public boolean sendEmail(String title, String message) {
-        return false;
     }    
     
     @Override
@@ -380,58 +363,6 @@ public class User extends Person{
     /**
      * @return the name
      */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the lastname
-     */
-    public String getLastname() {
-        return lastname;
-    }
-
-    /**
-     * @param lastname the lastname to set
-     */
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    /**
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * @param email the email to set
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
-     * @return the celphone
-     */
-    public String getCelphone() {
-        return celphone;
-    }
-
-    /**
-     * @param celphone the celphone to set
-     */
-    public void setCelphone(String celphone) {
-        this.celphone = celphone;
-    }    
 
     /**
      * @return the ID

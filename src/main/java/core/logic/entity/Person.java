@@ -21,24 +21,16 @@ package core.logic.entity;
  */
 public abstract class Person {
     
-    String name;
-    String lastname;
-    String email;
-    String celphone;
+    private String name = null;
+    private String lastname = null;
+    private String email = null;
+    private String celphone = null;
     
     
     /**
      * This method clears data stored in a Person instance. 
      */
     public abstract void cleanData();
-    
-    /**
-     * This method sends an email to a person.
-     * @param title
-     * @param message 
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
-     */
-    public abstract boolean sendEmail(String title, String message);
      
     /**
      * Method to add a person to database.
@@ -51,6 +43,62 @@ public abstract class Person {
      * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
     public abstract boolean deleteFromDatabase();    
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the lastname
+     */
+    public String getLastname() {
+        return lastname;
+    }
+
+    /**
+     * @param lastname the lastname to set
+     */
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the celphone
+     */
+    public String getCelphone() {
+        return celphone;
+    }
+
+    /**
+     * @param celphone the celphone to set
+     */
+    public void setCelphone(String celphone) {
+        this.celphone = celphone;
+    }
     
     
 }

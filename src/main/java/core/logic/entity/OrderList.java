@@ -536,7 +536,7 @@ public class OrderList {
         
         volumetric_limit = (system_Data.get("volumetric_limit") != null) ? Double.parseDouble(system_Data.get("volumetric_limit")) : 0;
         volumetric_cost = (system_Data.get("volumetric_cost") != null) ? Double.parseDouble(system_Data.get("volumetric_cost")) : 0;
-        
+        system_Data.clear();
         
         Stack<Packet> packetStack = this.getPacketStack();
         double total_volume = 0;

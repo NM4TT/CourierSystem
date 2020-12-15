@@ -37,26 +37,15 @@ public class Customer extends Person{
      */
     public Customer(){
         this.ID = null;
-        this.name = null;
-        this.lastname = null;
-        this.email =  null;
-        this.celphone = null;
     }
       
     /**
      * Constructor with all the class attributes.
      * @param id
-     * @param name
-     * @param lastname
-     * @param email
-     * @param celphone 
+
      */
-    public Customer(String id, String name, String lastname, String email, String celphone){
+    public Customer(String id){
        this.ID = id;
-       this.name = name;
-       this.lastname = lastname;
-       this.email = email;
-       this.celphone = celphone;
     }
     
     @Override
@@ -187,14 +176,6 @@ public class Customer extends Person{
         }
     }
     
-    
-    
-    
-    @Override
-    public boolean sendEmail(String title, String message) {
-        return false;
-    }    
-    
     @Override
     public void cleanData() {
         this.setCelphone(null);
@@ -217,61 +198,4 @@ public class Customer extends Person{
     public void setID(String ID) {
         this.ID = ID;
     }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the lastname
-     */
-    public String getLastname() {
-        return lastname;
-    }
-
-    /**
-     * @param lastname the lastname to set
-     */
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    /**
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * @param email the email to set
-     */
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    /**
-     * @return the celphone
-     */
-    public String getCelphone() {
-        return celphone;
-    }
-
-    /**
-     * @param celphone the celphone to set
-     */
-    public void setCelphone(String celphone) {
-        this.celphone = celphone;
-    }    
-    
 }
