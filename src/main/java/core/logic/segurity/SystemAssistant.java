@@ -53,13 +53,13 @@ public class SystemAssistant {
         
         try {
             if(cn != null){
-                pst = cn.prepareStatement("SELECT * FROM users WHERE Employee_User = ? AND Employee_Password = ?");
+                pst = cn.prepareStatement("SELECT * FROM employees WHERE Employee_Username = ? AND Employee_Password = ?");
                 pst.setString(1,username);
                 pst.setString(2,password);
                 rs = pst.executeQuery();
                 
                 if (rs.next()) {
-                    user.setID("Employee_ID");
+                    user.setID(rs.getString("Employee_ID"));
                     user.setName(rs.getString("Employee_Name"));
                     user.setLastname(rs.getString("Employee_LastName"));
                     user.setEmail(rs.getString("Employee_Email"));
