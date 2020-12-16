@@ -64,7 +64,7 @@ public class User extends Person{
     }
     
     @Override
-    public boolean addToDatabase(){
+    public void addToDatabase(){
         boolean taskDone = false;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
@@ -92,16 +92,18 @@ public class User extends Person{
             } finally {
                 DataBase.close(pst, cn);
             }
-        return taskDone; 
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"User added succesfully");
+        }
+ 
     }
     
     /**
      * Method to update a user in database.
      * <p>Once the user is updated, the newUser instance is cleaned.
      * @param newUser is the User instance with new data.
-     * @return taskDone true or false.
      */    
-    public boolean update(User newUser){
+    public void update(User newUser){
         boolean taskDone = false;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;      
@@ -130,11 +132,13 @@ public class User extends Person{
             } finally {
                DataBase.close(pst, cn); 
             }
-        return taskDone; 
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"User updated succesfully");
+        } 
     }
     
     @Override
-    public boolean deleteFromDatabase(){
+    public void deleteFromDatabase(){
         boolean taskDone = false;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
@@ -153,7 +157,9 @@ public class User extends Person{
             } finally {
                 DataBase.close(pst, cn);
             }
-        return taskDone;   
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"User deleted succesfully");
+        } 
     }
     
     /**
@@ -163,7 +169,7 @@ public class User extends Person{
      * @throws NullPointerException
      */
     public static User searchOnDatabase(String userID) throws NullPointerException{
-        User user = new User();
+        User user = null;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -174,7 +180,8 @@ public class User extends Person{
                 pst.setString(1, userID);
                 rs = pst.executeQuery();
 
-                if(rs.next()) {                
+                if(rs.next()) {       
+                    user = new User();
                     user.setID(userID);
                     user.setName(rs.getString("Employee_Name"));
                     user.setLastname(rs.getString("Employee_LastName"));
@@ -192,11 +199,7 @@ public class User extends Person{
             DataBase.close(rs, pst, cn);
         }
         
-        if (user.getID() != null) {
-            return user;
-        } else {
-            return null;
-        }
+        return user;
     }
 
     /**
@@ -204,9 +207,8 @@ public class User extends Person{
      * <p>This method <b>can only be executed once</b> to set the rols.
      * <p>Once the rols are created, the rols <tt>array</tt> is cleaned.
      * @param rols is the rol list as an array structure.
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public static boolean createUserRols(String rols[]){
+    public static void createUserRols(String rols[]){
         boolean taskDone = false;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
@@ -242,7 +244,9 @@ public class User extends Person{
             DataBase.close(pst,cn);
         }
         
-        return taskDone;
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Rols created succesfully");
+        } 
     }
     
     /**

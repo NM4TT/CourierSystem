@@ -49,7 +49,7 @@ public class Customer extends Person{
     }
     
     @Override
-    public boolean addToDatabase(){
+    public void addToDatabase(){
         boolean taskDone = false;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
@@ -75,16 +75,17 @@ public class Customer extends Person{
             } finally {
                 DataBase.close(pst, cn);
             }
-        return taskDone;    
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Customer added succesfully");
+        }   
     }
     
     /**
      * Method to update a person in database.
      * <p>Once the customer is updated, the newClient instance is cleaned.
      * @param newClient
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public boolean update(Customer newClient){
+    public void update(Customer newClient){
         boolean taskDone = false;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;      
@@ -110,11 +111,13 @@ public class Customer extends Person{
             } finally {
                DataBase.close(pst, cn); 
             }
-        return taskDone;           
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Customer updated succesfully");
+        }          
     }
     
     @Override
-    public boolean deleteFromDatabase(){
+    public void deleteFromDatabase(){
         boolean taskDone = false;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
@@ -133,7 +136,9 @@ public class Customer extends Person{
             } finally {
                 DataBase.close(pst, cn);
             }
-        return taskDone;           
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Customer deleted succesfully");
+        }            
     }
     
     /**
@@ -143,7 +148,7 @@ public class Customer extends Person{
      * @throws NullPointerException
      */
     public static Customer searchOnDatabase(String customerID) throws NullPointerException{
-        Customer customer = new Customer();
+        Customer customer = null;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -154,7 +159,8 @@ public class Customer extends Person{
                 pst.setString(1, customerID);
                 rs = pst.executeQuery();
 
-                if(rs.next()) {                
+                if(rs.next()) {
+                    customer = new Customer();
                     customer.setID(customerID);
                     customer.setName(rs.getString("Client_Name"));
                     customer.setLastname(rs.getString("Client_LastName"));
@@ -169,11 +175,7 @@ public class Customer extends Person{
             DataBase.close(rs, pst, cn);
         }
         
-        if (customer.getID() != null) {
-            return customer;
-        } else {
-            return null;
-        }
+        return customer;
     }
     
     @Override

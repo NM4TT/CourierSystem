@@ -34,15 +34,13 @@ public abstract class Person {
      
     /**
      * Method to add a person to database.
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public abstract boolean addToDatabase();
+    public abstract void addToDatabase();
     
     /**
      * Method to delete a person from database.
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public abstract boolean deleteFromDatabase();    
+    public abstract void deleteFromDatabase();    
 
     /**
      * @return the name
