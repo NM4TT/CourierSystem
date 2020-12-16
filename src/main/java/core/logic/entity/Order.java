@@ -20,6 +20,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import javax.swing.JOptionPane;
@@ -76,7 +78,7 @@ public class Order {
          * This returns the constant value of the enum.
          * @return value as <tt>int</tt> 
          */
-        int getValue(){
+        public int getValue(){
             return value;
         }
         /**
@@ -84,7 +86,7 @@ public class Order {
          * @param value its the constant value as int.
          * @return 
          */
-        String getValue(int value){
+        public String getValue(int value){
             return Delivery_Status.values()[value].toString();
         }
     }
@@ -114,7 +116,7 @@ public class Order {
          * This returns the constant value of the enum.
          * @return value as <tt>int</tt> 
          */
-        int getValue(){
+        public int getValue(){
             return value;
         }
         /**
@@ -122,7 +124,7 @@ public class Order {
          * @param value its the constant value as int.
          * @return 
          */
-        String getValue(int value){
+        public String getValue(int value){
             return Payment_Status.values()[value].toString();
         }
     
@@ -169,19 +171,18 @@ public class Order {
      * @param payment_status
      * @param client 
      */
-    public Order(String id, String date, String delivery_status,String payment_status, Customer client ){
+    public Order(String id, String date, int delivery_status,int payment_status, Customer client ){
         this.ID = id;
         this.date = date;
-        this.delivery_status = Delivery_Status.valueOf(delivery_status.toUpperCase()).getValue();
-        this.payment_status = Payment_Status.valueOf(payment_status.toUpperCase()).getValue();
+        this.delivery_status = delivery_status;
+        this.payment_status = payment_status;
         this.client = client;
     }    
     
     /**
      * This method adds a new order to the database.
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public boolean addToDataBase(){
+    public void addToDataBase(){
         boolean taskDone = false;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
@@ -203,49 +204,42 @@ public class Order {
             } finally {
                 DataBase.close(pst, cn);
             }
-        
-        return taskDone;
+            
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Order added succesfully");
+        }
     }
     
     /**
      * This method is used to assign a packet to this order.
-     * @param packet
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
+     * @param packets
      */
-    public boolean addPacket(Packet packet){
+    public void addPackets(List<Packet> packets){
         boolean taskDone = false;
         
-        if (packet.getID() != null) {
-            Connection cn = DataBase.connect();
-            PreparedStatement pst = null;
-        
-            try {
-                if(cn != null){
-                    pst = cn.prepareStatement("UPDATE packets SET Order_ID = ? WHERE Packet_ID = ?");
-                    pst.setString(1,this.getID());
-                    pst.setString(2,packet.getID());
-                    
-                    pst.execute();
-                    taskDone = true;
-                    
-                }
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR ADDING PACKET TO ORDER", JOptionPane.ERROR_MESSAGE);
-            } finally {
-                DataBase.close(pst, cn);
+        if (packets.size() > 0) {
+            
+            for(Packet packet : packets){
+                packet.addToDatabase(this.getID());
             }
+            
+            taskDone = true;
+            
+        } else {
+            JOptionPane.showMessageDialog(null,"No packets to add");
         }
         
-        return taskDone;
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Packets added to order");
+        }
     }
     
     /**
      * This method is used to update an order.
      * <p>Once the order is updated, the order instance to update is cleaned.
      * @param newOrder is the updated order.
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public boolean updateOrder(Order newOrder){
+    public void updateOrder(Order newOrder){
         boolean taskDone = false;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
@@ -270,15 +264,16 @@ public class Order {
                 DataBase.close(pst, cn);
             }
         
-        return taskDone;
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Order updated succesfully");
+        }
     }
     
     /**
      * This method is used only to update the order delivery_status.
      * @param newStatus delivery_status name.
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public boolean updateDeliveryStatus(String newStatus){
+    public void updateDeliveryStatus(String newStatus){
         boolean taskDone = false;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
@@ -299,15 +294,16 @@ public class Order {
                 DataBase.close(pst, cn);
             }
         
-        return taskDone;
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Delivery Status updated");
+        }
     }
 
     /**
      * This method is used only to update the order payment_status.
      * @param newStatus payment_status name.
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public boolean updatePaymentStatus(String newStatus){
+    public void updatePaymentStatus(String newStatus){
         boolean taskDone = false;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
@@ -328,14 +324,15 @@ public class Order {
                 DataBase.close(pst, cn);
             }
         
-        return taskDone;
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Payment Status updated");
+        }
     }
     
     /**
      * This method is used to delete from the database an order.
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public boolean deleteFromDataBase(){
+    public void deleteFromDataBase(){
         boolean taskDone = false;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
@@ -354,15 +351,16 @@ public class Order {
                 DataBase.close(pst, cn);
             }
             
-        return taskDone;
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Order deleted succesfully");
+        }
     }
     
     /**
      * This method is used to delete all the packets this order has.
      * <p>It is useful only if the actual orderList is going to be deleted too.
-     * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
      */
-    public boolean deletePackets(){
+    public void deletePackets(){
         boolean taskDone = false;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
@@ -381,7 +379,9 @@ public class Order {
                 DataBase.close(pst, cn);
             }
         
-        return taskDone;
+        if (taskDone) {
+            JOptionPane.showMessageDialog(null,"Packets of order deleted");
+        }
     }
     
     /**
@@ -391,7 +391,7 @@ public class Order {
      * @throws NullPointerException
      */
     public static Order searchOnDatabase(String orderID) throws NullPointerException{
-        Order list = new Order();
+        Order list = null;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -403,6 +403,7 @@ public class Order {
                     rs = pst.executeQuery();
                     
                     if(rs.next()){
+                        list = new Order();
                         list.setID(orderID);
                         list.setDate(rs.getString("Order_Date"));
                         list.setDeliveryStatus(rs.getInt("Delivery_Status"));
@@ -417,11 +418,7 @@ public class Order {
                 DataBase.close(rs, pst, cn);
             }
         
-        if (list.getID() != null) {
-            return list;
-        } else {
-            return null;
-        }
+        return list;
     }
     
     /**
@@ -429,7 +426,7 @@ public class Order {
      * @return Stack of packets
      */
     public Stack<Packet> getPacketStack(){
-        Stack<Packet> stack = new Stack();
+        Stack<Packet> stack = null;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -440,6 +437,7 @@ public class Order {
                     pst.setString(1, this.getID());
                     rs = pst.executeQuery();
                     
+                    stack = new Stack<>();
                     
                     while(rs.next()){
                         Packet packet = new Packet(rs.getString("Packet_ID"), rs.getString("Order_ID"), rs.getString("Concept"), rs.getDouble("Weight_Lb"), rs.getDouble("Volumetric_Weight"));
@@ -453,11 +451,7 @@ public class Order {
                 DataBase.close(rs, pst, cn);
             }
         
-        if (!stack.empty()) {
-            return stack;
-        } else {
-            return null;
-        }
+        return stack;
     }
     
     /**
@@ -634,10 +628,9 @@ public class Order {
          * This method is used to register a packet in the database.
          * <b>IMPORTANT:</b>these packets need to be part of an active order.
          * <p>Before adding a packet, be sure there is an order to store it.
-         * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
+         * @param orderID Order of packet
          */
-        public boolean registerPacket(){
-            boolean taskDone = false;
+        public void addToDatabase(String orderID){
             Connection cn = DataBase.connect();
             PreparedStatement pst = null;
             
@@ -645,21 +638,19 @@ public class Order {
                 if(cn != null){
                     pst = cn.prepareStatement("INSERT INTO packets VALUES (?,?,?,?,?)");
                     pst.setString(1, this.getID());
-                    pst.setString(2, null);
+                    pst.setString(2, orderID);
                     pst.setString(3, this.getConcept());
                     pst.setDouble(4, this.getWeight());
                     pst.setDouble(5,this.getVolumetricWeight());
                     
                     pst.execute();
-                    taskDone = true;
                 }
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null,e.getMessage(),"ERROR ADDING PACKET", JOptionPane.ERROR_MESSAGE);
             } finally {
                 DataBase.close(pst, cn);
             }
-            
-            return taskDone;
+
         }
 
         /**
@@ -667,9 +658,8 @@ public class Order {
          * <p>Once the packet is updated, the newPacket instance is cleaned.
          * <b>IMPORTANT:</b>do not modify the orderID unless the order changes its ID too.
          * @param newPacket is the packetUpdate as a <tt>Packet</tt> object
-         * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
          */
-        public boolean updatePacket(Packet newPacket){
+        public void updatePacket(Packet newPacket){
             boolean taskDone = false;
             Connection cn = DataBase.connect();
             PreparedStatement pst = null;
@@ -693,15 +683,16 @@ public class Order {
                 } finally {
                     DataBase.close(pst, cn);
                 }            
-            return taskDone;
+            if (taskDone) {
+                JOptionPane.showMessageDialog(null,"Packet updated succesfully");
+            }
         }
         
         /**
          * This method is used to delete a packet within the database.
          * <b>IMPORTANT:</b>This action does not deletes the actual order itself...
-         * @return <b>taskDone</b> as <tt>true</tt> or <tt>false</tt>
          */        
-        public boolean deletePacket(){
+        public void deletePacket(){
             boolean taskDone = false;
             Connection cn = DataBase.connect();
             PreparedStatement pst = null;
@@ -719,7 +710,9 @@ public class Order {
                 } finally {
                     DataBase.close(pst, cn);
                 }            
-            return taskDone;
+            if (taskDone) {
+                JOptionPane.showMessageDialog(null,"Packet updated succesfully");
+            }
         }
         
         /**
@@ -729,7 +722,7 @@ public class Order {
          * @throws NullPointerException
          */
         public static Packet searchOnDataBase(String packetID) throws NullPointerException{
-            Packet packet = new Packet();
+            Packet packet = null;
             Connection cn = DataBase.connect();
             PreparedStatement pst = null;
             ResultSet rs = null;
@@ -741,6 +734,7 @@ public class Order {
                         rs = pst.executeQuery();
                         
                         if(rs.next()){
+                            packet = new Packet();
                             packet.setID(packetID);
                             packet.setOrder_ID(rs.getString("Order_ID"));
                             packet.setConcept(rs.getString("Concept"));
@@ -754,13 +748,7 @@ public class Order {
                 } finally {
                     DataBase.close(rs, pst, cn);
                 }
-            
-            if (packet.getID() != null) {
-                return packet;
-            } else {
-                return null;
-            }
-            
+            return packet;
         }
         
         /**
