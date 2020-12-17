@@ -85,9 +85,16 @@ public class SystemAssistant {
     /**
      * This method cleans the user instance.
      * @param user 
+     * @return <tt>true</tt> if user wants to log out, false otherwise.  
      */
-    public static void logOut(User user){
-        user.cleanData();
+    public static boolean logOut(User user){
+        int response = JOptionPane.showConfirmDialog(null, "Are you sure?", "Logging out...", JOptionPane.YES_NO_OPTION);   
+    
+        if (response == JOptionPane.YES_OPTION) {
+            user.cleanData();
+        }
+        
+        return response == JOptionPane.YES_OPTION;
     }
     
     /**
