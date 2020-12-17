@@ -112,7 +112,7 @@ public class SystemAssistant {
      * @param gmail_password the gmail password of the transmitter
      * @param message the message to be sent
      */
-    public static void sendEmail(Person transmitter, String gmail_password, Message message){
+    public static void sendEmail(User transmitter, String gmail_password, Message message){
         boolean messageSent = false;
         
             Properties property = new Properties(); // property object for gmail session
