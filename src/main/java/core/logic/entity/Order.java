@@ -390,7 +390,7 @@ public class Order {
      * @return Order
      * @throws NullPointerException
      */
-    public static Order searchOnDatabase(String orderID) throws NullPointerException{
+    public static Order searchOnDatabase(String orderID){
         Order list = null;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
@@ -721,7 +721,7 @@ public class Order {
          * @return <tt>Packet</tt> object with data.
          * @throws NullPointerException
          */
-        public static Packet searchOnDataBase(String packetID) throws NullPointerException{
+        public static Packet searchOnDataBase(String packetID){
             Packet packet = null;
             Connection cn = DataBase.connect();
             PreparedStatement pst = null;

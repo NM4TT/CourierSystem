@@ -147,7 +147,7 @@ public class Customer extends Person{
      * @return Customer
      * @throws NullPointerException
      */
-    public static Customer searchOnDatabase(String customerID) throws NullPointerException{
+    public static Customer searchOnDatabase(String customerID){
         Customer customer = null;
         Connection cn = DataBase.connect(); 
         PreparedStatement pst = null;
