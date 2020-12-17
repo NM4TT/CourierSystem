@@ -45,30 +45,23 @@ public class SystemAssistant {
      * @param password
      * @return User already signed in.
      */
-    public static User signIn(String username, String password){
-        User user = new User();
+    public static boolean signIn(String username, String password){
+        boolean isRegistered = false;
         Connection cn = DataBase.connect();
         PreparedStatement pst = null;
         ResultSet rs = null;
         
         try {
             if(cn != null){
-                pst = cn.prepareStatement("SELECT * FROM employees WHERE Employee_Username = ? AND Employee_Password = ?");
+                pst = cn.prepareStatement(
+                "SELECT * FROM employees WHERE "
+                + "(Employee_Username = ? AND Employee_Password = ?)");
                 pst.setString(1,username);
                 pst.setString(2,password);
                 rs = pst.executeQuery();
                 
                 if (rs.next()) {
-                    user.setID(rs.getString("Employee_ID"));
-                    user.setName(rs.getString("Employee_Name"));
-                    user.setLastname(rs.getString("Employee_LastName"));
-                    user.setEmail(rs.getString("Employee_Email"));
-                    user.setCelphone(rs.getString("Employee_Celphone"));
-                    user.setUsername(rs.getString(username));
-                    user.setPassword(rs.getString(password));
-                    user.setRol(rs.getInt("Employee_Position"));                    
-                } else {
-                    JOptionPane.showMessageDialog(null, "You are not registered in this system.", "Invalid data to sign in", JOptionPane.INFORMATION_MESSAGE);                    
+                    isRegistered = true;
                 }
                 
             }
@@ -77,7 +70,7 @@ public class SystemAssistant {
         } finally {
             DataBase.close(rs, pst, cn);
         }
-        return user;
+        return isRegistered;
     }
     
     /**
@@ -157,13 +150,11 @@ public class SystemAssistant {
         } catch (AddressException ex) {
             JOptionPane.showMessageDialog(null, "Wrong email format, please check \n your email and try again.", "Error using your email.", JOptionPane.ERROR_MESSAGE);
         } catch (MessagingException ex) {
-            JOptionPane.showMessageDialog(null,"An error ocurred: " + ex.getMessage());
+            JOptionPane.showMessageDialog(null,"An error ocurred: " + ex.getMessage() + "\n Pleas try again. ");
         }
         
         if (messageSent) {
             JOptionPane.showMessageDialog(null,"Message sent succesfully");
-        } else {
-            JOptionPane.showMessageDialog(null,"Message not sent, please try again.");
         }
     }
     
